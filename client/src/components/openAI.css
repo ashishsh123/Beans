@@ -4,6 +4,8 @@
   margin-bottom: 10px;
   text-align: start;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 .custom-color {
   background-color: #ffffff;
@@ -11,7 +13,7 @@
 
 .title {
   font-size: 32px;
-  font-weight: 900;
+  font-weight: 500;
   color: #1a1a1a;
   margin: 28px 0 22px;
 }
@@ -30,6 +32,7 @@
   text-align: start;
   outline: none;
   margin-left: 200px;
+  padding-top: 13px;
 }
 .postTextarea {
   width: 766px;
@@ -43,15 +46,17 @@
   outline: none;
   margin-left: 200px;
   overflow-y: hidden;
+  padding-top: 13px;
 }
 .send-button {
-  width: auto;
+  width: 40px;
   height: 40px;
   position: absolute;
-  bottom: 55px;
-  right: 160px;
-  background-color: #ffffff;
+  bottom: 59px;
+  right: 164px;
+  background-color: #19c37d;
   border: none;
+  border-radius: 50%;
 }
 .send-button.textarea {
   width: auto;
@@ -62,6 +67,26 @@
   background-color: #ffffff;
   border: none;
 }
+.send-button-new {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  bottom: 56px;
+  right: 70px;
+  border: none;
+  background-color: #19c37d;
+  border-radius: 50%;
+}
+.custom-btn {
+  border-radius: 50%;
+  width: 40px;
+  margin-right: 90px;
+  height: "40px";
+  margin-top: 55px;
+  margin-left: -50px;
+  position: absolute;
+}
+
 .selected-box {
   background-color: blue;
   color: white; /* You can adjust the text color to make it more visible */
@@ -99,7 +124,7 @@
 .chat-output-avatar {
   background-color: #19c27d;
   border-radius: 50%;
-  width: 699px;
+  width: 40px;
   height: 40px;
   color: white;
 }
@@ -115,4 +140,11 @@
 }
 .dropdown-gutter {
   width: 273px;
+}
+.mandatory {
+  color: blue;
+}
+.custom-nature-message {
+  font-size: 12px;
+  font-weight: 500;
 }

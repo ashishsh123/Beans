@@ -1,4 +1,6 @@
 const express = require("express");
+const { TextServiceClient } = require("@google-ai/generativelanguage");
+const { GoogleAuth } = require("google-auth-library");
 require("dotenv").config();
 const app = express();
 const cors = require("cors");
@@ -6,6 +8,65 @@ const cors = require("cors");
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*Google Palm AI API Integration */
+const MODEL_NAME = "models/text-bison-001";
+const API_KEY = "AIzaSyCi0Xvl962yiZ40TyqKeDqrFi66hd2RMuE";
+
+const client = new TextServiceClient({
+  authClient: new GoogleAuth().fromAPIKey(API_KEY),
+});
+
+app.post("/generate-text", (req, res) => {
+  const {
+    prompt,
+    // stopSequences,
+    // temperature,
+    // candidateCount,
+    // top_k,
+    // top_p,
+    // max_output_tokens,
+    // safety_settings,
+  } = req.body;
+
+  client
+    .generateText({
+      model: MODEL_NAME,
+      // temperature: temperature || 0.7,
+      // candidateCount: candidateCount || 1,
+      // top_k: top_k || 40,
+      // top_p: top_p || 0.95,
+      // max_output_tokens: max_output_tokens || 1024,
+      // stop_sequences: stopSequences || [],
+      // safety_settings: safety_settings || [
+      //   { category: "HARM_CATEGORY_DEROGATORY", threshold: 1 },
+      //   { category: "HARM_CATEGORY_TOXICITY", threshold: 1 },
+      //   { category: "HARM_CATEGORY_VIOLENCE", threshold: 2 },
+      //   { category: "HARM_CATEGORY_SEXUAL", threshold: 2 },
+      //   { category: "HARM_CATEGORY_MEDICAL", threshold: 2 },
+      //   { category: "HARM_CATEGORY_DANGEROUS", threshold: 2 },
+      // ],
+      prompt: {
+        text: prompt,
+      },
+    })
+    .then((result) => {
+      console.log("result------------------", JSON.stringify(result));
+      const summary = result[0]?.candidates[0]?.output;
+      console.log(summary);
+      res.json({ summary: summary });
+    })
+    .catch((error) => {
+      console.error("---------------------------------------------", error);
+      res.status(500).json({ error: "An error occurred." });
+    });
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*Open AI API Integration */
 
 const { Configuration, OpenAIApi } = require("openai");
 
@@ -55,24 +116,23 @@ app.post("/summary", async (req, res) => {
 /*CONTENT GENERATION */
 app.post("/generation", async (req, res) => {
   try {
-    const {
-      optionSelected,
-      genreSelected,
-      writingStyleSelected,
-      natureSelected,
-      editorialSelected,
-      inputText,
-    } = req.body;
+    // genreSelected,
+    // writingStyleSelected,
+    // natureSelected,
+    // editorialSelected,
+    // toneselected,
+    // inputText,
+    const { prompt } = req.body;
 
-    if (!inputText) {
-      return res.status(400).json({ error: "Please provide a story." });
-    }
+    // if (!inputText) {
+    //   return res.status(400).json({ error: "Please provide a story." });
+    // }
 
     // Create a conversation with the user message
     const conversation = [
       {
         role: "user",
-        content: `Generate Content on the basis of given input:-  ${optionSelected}\n Genre: ${genreSelected}\n Editorial: ${editorialSelected}\n Write Style: ${writingStyleSelected}\n Nature: ${natureSelected}\n ${inputText}`,
+        content: prompt,
       },
     ];
 
