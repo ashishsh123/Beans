@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import "./openAI.css";
 
-const Generate = () => {
+const OpenAI = () => {
   const [output, setOutput] = useState("");
   const [inputText, setInputText] = useState("");
   const [optionSelected, setOptionSelected] = useState(false);
@@ -27,6 +27,48 @@ const Generate = () => {
     setSelectedOptions([option]);
   };
 
+  const handleGenerateContent = async () => {
+    setLoading(true);
+    setInputVisibility(true);
+    setButtonClicked(true);
+
+    const prompt = `consider yourself as subject expert of ${genreSelected} and ${editorialSelected} ${natureSelected} aspects of ${inputText} in style of ${writingStyleSelected} in ${toneselected} tone.`;
+    setPrompt(prompt);
+    const requestData = { prompt: prompt };
+    // genreSelected,
+    // writingStyleSelected,
+    // natureSelected,
+    // editorialSelected,
+    // toneselected,
+    // inputText,
+
+    try {
+      const response = await fetch("http://localhost:3001/generation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setOutput(data.summary);
+
+        console.log(data.summary);
+        setOptionSelected(true);
+        setOutputVisible(true);
+      } else {
+        console.error("Error generating content");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
   const handlePalmGenerateContent = async () => {
     setLoading(true);
     setInputVisibility(true);
@@ -67,6 +109,7 @@ const Generate = () => {
       setLoading(false);
     }
   };
+  ///////////////////////////////////////////////////////////////////////////////////////////////
   const firstOptions = [
     "Generate",
     "Profanity Check",
@@ -188,7 +231,7 @@ const Generate = () => {
                     </svg>
                   </div>
                   <div className="message">
-                    {output?.split("\n")?.map((text, index) => (
+                    {output.split("\n").map((text, index) => (
                       <p key={index}>{text}</p>
                     ))}
                   </div>
@@ -208,7 +251,7 @@ const Generate = () => {
           )}
           <div>
             <div className="search-box d-flex textarea-container">
-              <div>
+              <div className="">
                 <textarea
                   className="custom-box postTextarea form-control my-5"
                   type="text"
@@ -220,10 +263,11 @@ const Generate = () => {
                 ></textarea>
               </div>
               <button
-                className=" send-button-new textarea"
-                onClick={handlePalmGenerateContent}
+                className="send-button-new textarea "
+                onClick={handleGenerateContent}
               >
                 <svg
+                  style={{ paddingBottom: "2px" }}
                   width="24"
                   height="22"
                   viewBox="0 0 32 34"
@@ -232,10 +276,31 @@ const Generate = () => {
                 >
                   <path
                     d="M30.8961 18.8991C31.2279 18.7225 31.5068 18.4512 31.7018 18.1157C31.8967 17.7802 32 17.3937 32 16.9994C32 16.6051 31.8967 16.2186 31.7018 15.8831C31.5068 15.5476 31.2279 15.2763 30.8961 15.0996L2.89505 0.224615C2.54786 0.0400454 2.15762 -0.0331805 1.77193 0.0138699C1.38624 0.0609203 1.02177 0.226213 0.72299 0.489584C0.42421 0.752956 0.204033 1.10302 0.0893154 1.49707C-0.0254021 1.89113 -0.0297013 2.31214 0.0769443 2.70874L2.93505 13.3337C3.0546 13.7778 3.30707 14.1684 3.65425 14.4464C4.00142 14.7244 4.42439 14.8746 4.85912 14.8744L14.0015 14.8744C14.5319 14.8744 15.0406 15.0983 15.4157 15.4968C15.7908 15.8953 16.0015 16.4358 16.0015 16.9994C16.0015 17.563 15.7908 18.1035 15.4157 18.502C15.0406 18.9005 14.5319 19.1244 14.0015 19.1244L4.85912 19.1244C4.42439 19.1241 4.00142 19.2744 3.65425 19.5523C3.30707 19.8303 3.0546 20.2209 2.93505 20.665L0.0789422 31.29C-0.027917 31.6865 -0.0238734 32.1074 0.0905732 32.5015C0.20502 32.8956 0.424928 33.2458 0.723473 33.5094C1.02202 33.7729 1.3863 33.9385 1.7719 33.9859C2.1575 34.0333 2.54775 33.9605 2.89505 33.7763L30.8961 18.9013L30.8961 18.8991Z"
-                    fill="#838383"
+                    fill="#FFF"
                   />
                 </svg>
               </button>
+              <div>
+                <button
+                  type="button"
+                  className="btn btn-primary custom-btn"
+                  onClick={handlePalmGenerateContent}
+                >
+                  <svg
+                    style={{ paddingRight: "6px", paddingBottom: "3px" }}
+                    width="24"
+                    height="22"
+                    viewBox="0 0 32 34"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M30.8961 18.8991C31.2279 18.7225 31.5068 18.4512 31.7018 18.1157C31.8967 17.7802 32 17.3937 32 16.9994C32 16.6051 31.8967 16.2186 31.7018 15.8831C31.5068 15.5476 31.2279 15.2763 30.8961 15.0996L2.89505 0.224615C2.54786 0.0400454 2.15762 -0.0331805 1.77193 0.0138699C1.38624 0.0609203 1.02177 0.226213 0.72299 0.489584C0.42421 0.752956 0.204033 1.10302 0.0893154 1.49707C-0.0254021 1.89113 -0.0297013 2.31214 0.0769443 2.70874L2.93505 13.3337C3.0546 13.7778 3.30707 14.1684 3.65425 14.4464C4.00142 14.7244 4.42439 14.8746 4.85912 14.8744L14.0015 14.8744C14.5319 14.8744 15.0406 15.0983 15.4157 15.4968C15.7908 15.8953 16.0015 16.4358 16.0015 16.9994C16.0015 17.563 15.7908 18.1035 15.4157 18.502C15.0406 18.9005 14.5319 19.1244 14.0015 19.1244L4.85912 19.1244C4.42439 19.1241 4.00142 19.2744 3.65425 19.5523C3.30707 19.8303 3.0546 20.2209 2.93505 20.665L0.0789422 31.29C-0.027917 31.6865 -0.0238734 32.1074 0.0905732 32.5015C0.20502 32.8956 0.424928 33.2458 0.723473 33.5094C1.02202 33.7729 1.3863 33.9385 1.7719 33.9859C2.1575 34.0333 2.54775 33.9605 2.89505 33.7763L30.8961 18.9013L30.8961 18.8991Z"
+                      fill="#FFF"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -443,11 +508,9 @@ const Generate = () => {
                     onChange={(e) => setInputText(e.target.value)}
                   ></textarea>
                 </div>
-                <button
-                  className="send-button"
-                  onClick={handlePalmGenerateContent}
-                >
+                <button className="send-button" onClick={handleGenerateContent}>
                   <svg
+                    style={{ paddingBottom: "2px" }}
                     width="24"
                     height="22"
                     viewBox="0 0 32 34"
@@ -456,10 +519,32 @@ const Generate = () => {
                   >
                     <path
                       d="M30.8961 18.8991C31.2279 18.7225 31.5068 18.4512 31.7018 18.1157C31.8967 17.7802 32 17.3937 32 16.9994C32 16.6051 31.8967 16.2186 31.7018 15.8831C31.5068 15.5476 31.2279 15.2763 30.8961 15.0996L2.89505 0.224615C2.54786 0.0400454 2.15762 -0.0331805 1.77193 0.0138699C1.38624 0.0609203 1.02177 0.226213 0.72299 0.489584C0.42421 0.752956 0.204033 1.10302 0.0893154 1.49707C-0.0254021 1.89113 -0.0297013 2.31214 0.0769443 2.70874L2.93505 13.3337C3.0546 13.7778 3.30707 14.1684 3.65425 14.4464C4.00142 14.7244 4.42439 14.8746 4.85912 14.8744L14.0015 14.8744C14.5319 14.8744 15.0406 15.0983 15.4157 15.4968C15.7908 15.8953 16.0015 16.4358 16.0015 16.9994C16.0015 17.563 15.7908 18.1035 15.4157 18.502C15.0406 18.9005 14.5319 19.1244 14.0015 19.1244L4.85912 19.1244C4.42439 19.1241 4.00142 19.2744 3.65425 19.5523C3.30707 19.8303 3.0546 20.2209 2.93505 20.665L0.0789422 31.29C-0.027917 31.6865 -0.0238734 32.1074 0.0905732 32.5015C0.20502 32.8956 0.424928 33.2458 0.723473 33.5094C1.02202 33.7729 1.3863 33.9385 1.7719 33.9859C2.1575 34.0333 2.54775 33.9605 2.89505 33.7763L30.8961 18.9013L30.8961 18.8991Z"
-                      fill="#838383"
+                      fill="#FFF"
                     />
                   </svg>
                 </button>
+                <div>
+                  <button
+                    type="button"
+                    className="btn btn-primary custom-btn"
+                    onClick={handlePalmGenerateContent}
+                  >
+                    {" "}
+                    <svg
+                      style={{ paddingRight: "6px", paddingBottom: "3px" }}
+                      width="24"
+                      height="22"
+                      viewBox="0 0 32 34"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M30.8961 18.8991C31.2279 18.7225 31.5068 18.4512 31.7018 18.1157C31.8967 17.7802 32 17.3937 32 16.9994C32 16.6051 31.8967 16.2186 31.7018 15.8831C31.5068 15.5476 31.2279 15.2763 30.8961 15.0996L2.89505 0.224615C2.54786 0.0400454 2.15762 -0.0331805 1.77193 0.0138699C1.38624 0.0609203 1.02177 0.226213 0.72299 0.489584C0.42421 0.752956 0.204033 1.10302 0.0893154 1.49707C-0.0254021 1.89113 -0.0297013 2.31214 0.0769443 2.70874L2.93505 13.3337C3.0546 13.7778 3.30707 14.1684 3.65425 14.4464C4.00142 14.7244 4.42439 14.8746 4.85912 14.8744L14.0015 14.8744C14.5319 14.8744 15.0406 15.0983 15.4157 15.4968C15.7908 15.8953 16.0015 16.4358 16.0015 16.9994C16.0015 17.563 15.7908 18.1035 15.4157 18.502C15.0406 18.9005 14.5319 19.1244 14.0015 19.1244L4.85912 19.1244C4.42439 19.1241 4.00142 19.2744 3.65425 19.5523C3.30707 19.8303 3.0546 20.2209 2.93505 20.665L0.0789422 31.29C-0.027917 31.6865 -0.0238734 32.1074 0.0905732 32.5015C0.20502 32.8956 0.424928 33.2458 0.723473 33.5094C1.02202 33.7729 1.3863 33.9385 1.7719 33.9859C2.1575 34.0333 2.54775 33.9605 2.89505 33.7763L30.8961 18.9013L30.8961 18.8991Z"
+                        fill="#FFF"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
             )}
         </div>
@@ -468,4 +553,4 @@ const Generate = () => {
   );
 };
 
-export default Generate;
+export default OpenAI;

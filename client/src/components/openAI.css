@@ -53,7 +53,7 @@
   height: 40px;
   position: absolute;
   bottom: 59px;
-  right: 164px;
+  right: 217px;
   background-color: #19c37d;
   border: none;
   border-radius: 50%;
@@ -77,6 +77,16 @@
   background-color: #19c37d;
   border-radius: 50%;
 }
+.regenrate-openai-btn {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 75px;
+  right: 68px;
+  border: none;
+  background-color: #8be78b;
+  border-radius: 50%;
+}
 .custom-btn {
   border-radius: 50%;
   width: 40px;
@@ -85,6 +95,54 @@
   margin-top: 55px;
   margin-left: -50px;
   position: absolute;
+  padding: "8px";
+}
+.custom-btn-claude {
+  right: 185px;
+  border-radius: 50%;
+  width: 40px;
+  margin-right: 90px;
+  height: "40px";
+  margin-top: 55px;
+  position: absolute;
+  padding: "8px";
+  background-color: red;
+}
+.custom-btn-claude-instant {
+  right: 47px;
+  border-radius: 50%;
+  width: 40px;
+  margin-right: 90px;
+  height: "40px";
+  margin-top: 55px;
+  position: absolute;
+  padding: "8px";
+  background-color: red;
+}
+.regenerate-btn {
+  border-radius: 50%;
+  width: 40px;
+  /* margin-right: 90px; */
+  height: "40px";
+  margin-top: -70px;
+  margin-left: 1050px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: #38b8f7;
+}
+.regenrate-claude-btn {
+  border-radius: 50%;
+  width: 40px;
+  margin-right: 90px;
+  height: "40px";
+  position: absolute;
+  padding: "8px";
+  background-color: red;
+  top: 71px;
+  right: -18px;
 }
 
 .selected-box {
