@@ -1,12 +1,13 @@
 import "./App.css";
+import Textgenerate from "./components/Textgenerate";
 // import Generate from "./components/Generate";
-import OpenAI from "./components/openAI";
+// import OpenAI from "./components/openAI";
 
 function App() {
   return (
     <div className="App">
-      {/* <Generate /> */}
-      <OpenAI />
+      {/* <OpenAI /> */}
+      <Textgenerate />
     </div>
   );
 }
