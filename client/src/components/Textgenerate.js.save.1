@@ -11,10 +11,7 @@ import beans from "../assets/Beans-logos_black.png";
 
 const Textgenerate = () => {
   const [inputText, setInputText] = useState("");
-  const [disabled, setDisabled] = useState(false);
-  const [inputAutoText, setInputAutoText] = useState("");
-  const [taskSelected, setTaskSelected] = useState("Text Completion");
-  const [showInputBox, setShowInputBox] = useState(false);
+  const [taskSelected, setTaskSelected] = useState("");
   const [genreSelected, setGenreSelected] = useState("");
   const [writingStyleSelected, setWritingStyleSelected] = useState("");
   const [natureSelected, setNatureSelected] = useState("");
@@ -29,28 +26,21 @@ const Textgenerate = () => {
   const [source2, setSource2] = useState("");
   const [source3, setSource3] = useState("");
   const [source4, setSource4] = useState("");
-  const [source5, setSource5] = useState("");
-  const [source6, setSource6] = useState("");
   const [checkedCheckboxes1, setCheckedCheckboxes1] = useState([]);
   const [checkedCheckboxes2, setCheckedCheckboxes2] = useState([]);
   const [checkedCheckboxes3, setCheckedCheckboxes3] = useState([]);
   const [checkedCheckboxes4, setCheckedCheckboxes4] = useState([]);
-  const [checkedCheckboxes5, setCheckedCheckboxes5] = useState([]);
-  const [checkedCheckboxes6, setCheckedCheckboxes6] = useState([]);
   const [loading, setLoading] = useState(false);
   const [imageURL, setImageURL] = useState(null);
   const [claudLoading, setClaudLoading] = useState(false);
   const [palmLoading, setPalmLoading] = useState(false);
   const [gptLoading, setGptLoading] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
-  const [autoLoading, setAutoLoading] = useState(false);
-
   const [responses, setResponses] = useState({
     claudResponse: null,
     generateResponse: null,
     palmResponse: null,
-    summaryResponses: null,
-    generateAutoResponse: null,
+summaryResponses: null,
   });
 
   const icon = (
@@ -70,8 +60,7 @@ const Textgenerate = () => {
     setSidebarVisible(!sidebarVisible);
   };
 
-  // const isDropdownDisabled = taskSelected === "Text Completion";
-  const handleImage = async () => {
+ const handleImage = async () => {
     const prompt = `Generate the image according to the given input: ${inputText}`;
     const requestData = { prompt };
 
@@ -95,9 +84,12 @@ const Textgenerate = () => {
     }
   };
 
+
+
+
   const handleGenerateContent = async () => {
     const prompt = `consider yourself as subject expert of ${genreSelected} and ${editorialSelected} ${natureSelected} aspects of ${inputText} in style of ${writingStyleSelected} in ${toneselected} tone.`;
-    if (characterLimit === "300" || characterLimit === "300-500") {
+       if (characterLimit === "300" || characterLimit === "300-500") {
       // Add the additional line if the character limit is 300 or 300-500
       setPrompt(
         `${prompt} The word count of the output should not be greater than ${characterLimit}.`
@@ -107,7 +99,7 @@ const Textgenerate = () => {
     }
     const requestData = { prompt: prompt };
     try {
-      setGptLoading(true);
+      setGptLoading(true)
       const response = await fetch("http://3.108.252.141:3001/generation", {
         method: "POST",
         headers: {
@@ -117,7 +109,7 @@ const Textgenerate = () => {
       });
 
       if (response.ok) {
-        setGptLoading(false);
+        setGptLoading(false)
         const data = await response.json();
         const paragraphs =
           typeof data.summary === "string"
@@ -141,16 +133,14 @@ const Textgenerate = () => {
             )}
           </div>
         ));
-        {
-          /*setOutput(summaryWithCheckboxes); */
-        }
+        {/*setOutput(summaryWithCheckboxes); */}
         setResponses((prevResponses) => ({
           ...prevResponses,
           generateResponse: summaryWithCheckboxes,
         }));
 
         setSource3(summaryWithCheckboxes);
-        return data.summary;
+        return data.summary
         console.log(data.summary);
       } else {
         console.error("Error generating content");
@@ -160,142 +150,12 @@ const Textgenerate = () => {
     } finally {
     }
   };
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  const handleAutoCompletion = async () => {
-    const prompt = ` Autocomplete the given text and ensure that the completed response is grammatically correct . Expand upon the provided input to create a coherent and well-formed passage. Input Text:${inputAutoText}`;
-
-    const requestData = { prompt: prompt };
-    try {
-      setAutoLoading(true);
-      const response = await fetch("http://3.108.252.141:3001/autogenerate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (response.ok) {
-        setAutoLoading(false);
-        const data = await response.json();
-        const paragraphs =
-          typeof data.summary === "string"
-            ? data.summary.split("\n")
-            : data.summary;
-        const summaryWithCheckboxes = paragraphs.map((paragraph, index) => (
-          <div key={index} style={{ marginBottom: "10px" }}>
-            {paragraph.trim() && ( // Only render if the paragraph is not empty after trimming whitespace
-              <>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id={`checkbox${index}`}
-                  checked={checkedCheckboxes5[index]}
-                  onChange={() => handleCheckboxChange(5, index)}
-                  value=""
-                  aria-label="..."
-                />
-                <span style={{ marginLeft: "5px" }}>{paragraph}</span>
-              </>
-            )}
-          </div>
-        ));
-        {
-          /*setOutput(summaryWithCheckboxes); */
-        }
-        setResponses((prevResponses) => ({
-          ...prevResponses,
-          generateAutoResponse: summaryWithCheckboxes,
-        }));
-        setSource5(summaryWithCheckboxes);
-        return data.summary;
-      } else {
-        console.error("Error generating content");
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    } finally {
-    }
-  };
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  const handleTitleGeneration = async () => {
-    const prompt = `  provide multiple title options for following input as well . Input Text:${inputAutoText}`;
 
-    const requestData = { prompt: prompt };
-    try {
-      setAutoLoading(true);
-      const response = await fetch("http://3.108.252.141:3001/titlegenerate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      });
-
-      if (response.ok) {
-        setAutoLoading(false);
-        const data = await response.json();
-        const paragraphs =
-          typeof data.summary === "string"
-            ? data.summary.split("\n")
-            : data.summary;
-        const summaryWithCheckboxes = paragraphs.map((paragraph, index) => (
-          <div key={index} style={{ marginBottom: "10px" }}>
-            {paragraph.trim() && ( // Only render if the paragraph is not empty after trimming whitespace
-              <>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id={`checkbox${index}`}
-                  checked={checkedCheckboxes6[index]}
-                  onChange={() => handleCheckboxChange(6, index)}
-                  value=""
-                  aria-label="..."
-                />
-                <span style={{ marginLeft: "5px" }}>{paragraph}</span>
-              </>
-            )}
-          </div>
-        ));
-        {
-          /*setOutput(summaryWithCheckboxes); */
-        }
-        setResponses((prevResponses) => ({
-          ...prevResponses,
-          generateAutoResponse: summaryWithCheckboxes,
-        }));
-        setSource6(summaryWithCheckboxes);
-        return data.summary;
-      } else {
-        console.error("Error generating content");
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-    } finally {
-    }
-  };
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  const handleTextAutoCompletion = async () => {
-    setLoading(true);
-
-    await Promise.all([handleAutoCompletion(), handleTitleGeneration()])
-      .then(() => {console.log("Sucessfully fetched response")
-       setLoading(false);})
-      .catch((error) => {
-        // Handle error if needed
-        console.error("Error:", error);
-      })
-      .finally(() => {
-        
-      });
-  };
-
-  // /////////////////////////////////////////////////////////////////////////
   const handlePalmGenerateContent = async () => {
     const prompt = `consider yourself as subject expert of ${genreSelected} and ${editorialSelected} ${natureSelected} aspects of ${inputText} in style of ${writingStyleSelected} in ${toneselected} tone.`;
-    if (characterLimit === "300" || characterLimit === "300-500") {
+       if (characterLimit === "300" || characterLimit === "300-500") {
       // Add the additional line if the character limit is 300 or 300-500
       setPrompt(
         `${prompt} The word count of the output should not be greater than ${characterLimit}.`
@@ -307,7 +167,7 @@ const Textgenerate = () => {
 
     console.log(JSON.stringify(requestData));
     try {
-      setPalmLoading(true);
+      setPalmLoading(true)
       const response = await fetch("http://3.108.252.141:3001/generate-text", {
         method: "POST",
         headers: {
@@ -317,7 +177,7 @@ const Textgenerate = () => {
       });
 
       if (response.ok) {
-        setPalmLoading(false);
+       setPalmLoading(false)
         const data = await response.json();
         const paragraphs =
           typeof data.summary === "string"
@@ -334,6 +194,7 @@ const Textgenerate = () => {
                   value=""
                   checked={checkedCheckboxes2[index]}
                   onChange={() => handleCheckboxChange(2, index)}
+
                   aria-label="..."
                 />
                 <span style={{ marginLeft: "5px" }}>{paragraph}</span>
@@ -341,15 +202,13 @@ const Textgenerate = () => {
             )}
           </div>
         ));
-        {
-          /* setOutput(summaryWithCheckboxes);*/
-        }
+       {/* setOutput(summaryWithCheckboxes);*/}
         setResponses((prevResponses) => ({
           ...prevResponses,
           palmResponse: summaryWithCheckboxes,
         }));
-        setSource2(summaryWithCheckboxes);
-        return data.summary;
+setSource2(summaryWithCheckboxes);
+return data.summary
 
         // setOutput(data.summary);
 
@@ -367,7 +226,7 @@ const Textgenerate = () => {
 
   const handleClaudeGenerateContent = async () => {
     const prompt = `consider yourself as subject expert of ${genreSelected} and ${editorialSelected} ${natureSelected} aspects of ${inputText} in style of ${writingStyleSelected} in ${toneselected} tone.`;
-    if (characterLimit === "300" || characterLimit === "300-500") {
+       if (characterLimit === "300" || characterLimit === "300-500") {
       // Add the additional line if the character limit is 300 or 300-500
       setPrompt(
         `${prompt} The word count of the output should not be greater than ${characterLimit}.`
@@ -379,7 +238,7 @@ const Textgenerate = () => {
 
     console.log(JSON.stringify(requestData));
     try {
-      setClaudLoading(true);
+      setClaudLoading(true)
       const response = await fetch("http://3.108.252.141:3001/invoke-model", {
         method: "POST",
         headers: {
@@ -389,7 +248,7 @@ const Textgenerate = () => {
       });
 
       if (response.ok) {
-        setClaudLoading(false);
+        setClaudLoading(false)
         const data = await response.json();
 
         const paragraphs =
@@ -404,8 +263,9 @@ const Textgenerate = () => {
                   className="form-check-input"
                   type="checkbox"
                   id={`checkbox${index}`}
-                  checked={checkedCheckboxes1[index]}
+                   checked={checkedCheckboxes1[index]}
                   onChange={() => handleCheckboxChange(1, index)}
+
                   value=""
                   aria-label="..."
                 />
@@ -414,16 +274,14 @@ const Textgenerate = () => {
             )}
           </div>
         ));
-        {
-          /* setOutput(summaryWithCheckboxes);*/
-        }
+       {/* setOutput(summaryWithCheckboxes);*/}
         setResponses((prevResponses) => ({
           ...prevResponses,
           claudResponse: summaryWithCheckboxes,
         }));
         // setOutput(data.summary);
-        setSource1(summaryWithCheckboxes);
-        return data.summary;
+setSource1(summaryWithCheckboxes);
+return data.summary
 
         console.log(data.summary);
       } else {
@@ -435,7 +293,7 @@ const Textgenerate = () => {
     }
   };
   ///////////////////////////////////////////////////////////////////////////////////////////////
-  const handleContent = async () => {
+ const handleContent = async () => {
     try {
       setLoading(true);
       handleClaudeGenerateContent();
@@ -457,6 +315,7 @@ const Textgenerate = () => {
         )}`
       );
   }, [source1, source2, source3]);
+
 
   const handleSummary = async (allResponse) => {
     if (!allResponse) {
@@ -482,7 +341,7 @@ const Textgenerate = () => {
 
     console.log(JSON.stringify(requestData));
     try {
-      setSummaryLoading(true);
+      setSummaryLoading(true)
       const response = await fetch("http://3.108.252.141:3001/summary", {
         method: "POST",
         headers: {
@@ -492,9 +351,9 @@ const Textgenerate = () => {
       });
 
       if (response.ok) {
-        setSummaryLoading(false);
+       setSummaryLoading(false)
         const data = await response.json();
-        const paragraphs =
+         const paragraphs =
           typeof data.summary === "string"
             ? data.summary.split("\n")
             : data.summary;
@@ -508,6 +367,7 @@ const Textgenerate = () => {
                   id={`checkbox${index}`}
                   checked={checkedCheckboxes4[index]}
                   onChange={() => handleCheckboxChange(4, index)}
+
                   value=""
                   aria-label="..."
                 />
@@ -522,7 +382,7 @@ const Textgenerate = () => {
           summaryResponses: summaryWithCheckboxes,
         }));
         // setOutput(data.summary);
-        setSource4(summaryWithCheckboxes);
+         setSource4(summaryWithCheckboxes);
         console.log(data.summary);
       } else {
         console.error("Error generating content");
@@ -536,6 +396,7 @@ const Textgenerate = () => {
   const handleLinkClick = (engine) => {
     setSelectedEngine(engine);
   };
+
 
   const handleCheckboxChange = (sourceIndex, checkboxIndex) => {
     // Use the correct state variable based on the source index
@@ -568,20 +429,6 @@ const Textgenerate = () => {
           return updatedCheckboxes;
         });
         break;
-      case 5:
-        setCheckedCheckboxes5((prevCheckboxes) => {
-          const updatedCheckboxes = [...prevCheckboxes];
-          updatedCheckboxes[checkboxIndex] = !updatedCheckboxes[checkboxIndex];
-          return updatedCheckboxes;
-        });
-        break;
-      case 6:
-        setCheckedCheckboxes6((prevCheckboxes) => {
-          const updatedCheckboxes = [...prevCheckboxes];
-          updatedCheckboxes[checkboxIndex] = !updatedCheckboxes[checkboxIndex];
-          return updatedCheckboxes;
-        });
-        break;
       default:
         break;
     }
@@ -604,8 +451,7 @@ const Textgenerate = () => {
       source2,
       source3,
       source4,
-      source5,
-      source6,
+      // Add more sources as needed
     ].map((source, index) =>
       source
         .filter((_, checkboxIndex) => {
@@ -618,10 +464,7 @@ const Textgenerate = () => {
               return checkedCheckboxes3[checkboxIndex];
             case 3:
               return checkedCheckboxes4[checkboxIndex];
-            case 4:
-              return checkedCheckboxes5[checkboxIndex];
-            case 5:
-              return checkedCheckboxes6[checkboxIndex];
+            // Add cases for additional sources if needed
             default:
               return false;
           }
@@ -647,23 +490,28 @@ const Textgenerate = () => {
     setCheckedCheckboxes2(Array(checkedCheckboxes2.length).fill(false));
     setCheckedCheckboxes3(Array(checkedCheckboxes3.length).fill(false));
     setCheckedCheckboxes4(Array(checkedCheckboxes4.length).fill(false));
-    setCheckedCheckboxes5(Array(checkedCheckboxes5.length).fill(false));
-    setCheckedCheckboxes6(Array(checkedCheckboxes6.length).fill(false));
     // Reset additional sources if needed
   };
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
   return (
+<>
     <div className="App">
+
       <div className={`sideBar ${sidebarVisible ? "visible" : "hidden"}`}>
         <div className="upperSide">
           <div className="upperSideTop d-flex">
-            {/*<h1 style={{marginTop:"13px", fontSize:"30px", marginRight:"100px", color:"blue", fontWeight:"bold",}}>.ai</h1>*/}
-
             <img src={beans} alt="" className="logo"></img>
-            <h1 className="heading-ai">.toi.ai</h1>
+           <p
+              style={{
+                fontSize: "9px",
+                marginTop: "20px",
+                marginLeft: "34px",
+                color:"black"
+              }}
+            >
+              Powered by Claude(AWS).Vertex(Google).OpenAI(Microsoft)
+            </p>
           </div>
 
           <div className="upperSideBottom">
@@ -671,27 +519,16 @@ const Textgenerate = () => {
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
-                    onChange={(e) => {
-                      setTaskSelected(e.target.value);
-                      setShowInputBox(e.target.value !== "Text Completion");
-                    }}
+                    onChange={(e) => setTaskSelected(e.target.value)}
                   >
-                    <option
-                      selected
-                      value="Text Completion"
-                      className="text-dark"
-                    >
-                      Text Completion
-                    </option>
-                    {/* <option disabled selected className="text-dark">
+                    <option disabled selected className="text-dark">
                       what are you looking for
-                    </option> */}
+                    </option>
                     <option value="Generate" className="text-dark">
                       Generate
                     </option>
-
                     <option value="Profanity Check" className="text-dark">
                       Profanity Check
                     </option>
@@ -717,16 +554,12 @@ const Textgenerate = () => {
                 </div>
               </div>
               {/*---------------------------------------------------------*/}
-
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
-                    onChange={(e) => {
-                      setGenreSelected(e.target.value);
-                    }}
-                    disabled={taskSelected === "Text Completion"}
+                    onChange={(e) => setGenreSelected(e.target.value)}
                   >
                     <option disabled selected className="text-dark">
                       Genres
@@ -763,15 +596,13 @@ const Textgenerate = () => {
               </div>
             </div>
             {/*---------------------------------------------------------*/}
-
             <div className="row">
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
                     onChange={(e) => setNatureSelected(e.target.value)}
-                    disabled={taskSelected === "Text Completion"}
                   >
                     <option disabled selected className="text-dark">
                       Nature of Article
@@ -859,10 +690,9 @@ const Textgenerate = () => {
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
                     onChange={(e) => setEditorialSelected(e.target.value)}
-                    disabled={taskSelected === "Text Completion"}
                   >
                     <option disabled selected className="text-dark ">
                       Editorial Will
@@ -949,17 +779,14 @@ const Textgenerate = () => {
                 </div>
               </div>
             </div>
-
             {/*---------------------------------------------------------*/}
-
             <div className="row">
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
                     onChange={(e) => setWritingStyleSelected(e.target.value)}
-                    disabled={taskSelected === "Text Completion"}
                   >
                     <option disabled selected className="text-dark">
                       Preferred Writing Style
@@ -1001,10 +828,9 @@ const Textgenerate = () => {
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
                     onChange={(e) => setToneSelected(e.target.value)}
-                    disabled={taskSelected === "Text Completion"}
                   >
                     <option disabled selected className="text-dark">
                       Tone of the Aricle
@@ -1022,17 +848,14 @@ const Textgenerate = () => {
                 </div>
               </div>
             </div>
-
             {/*---------------------------------------------------------*/}
-
-            <div className="row">
+ <div className="row">
               <div className="col-md-6">
                 <div>
                   <select
-                    className="form-select  shadow bg-body"
+                    className="form-select w-75 shadow bg-body"
                     aria-label="Default select example"
                     onChange={(e) => setCharacterLimit(e.target.value)}
-                    disabled={taskSelected === "Text Completion"}
                   >
                     <option disabled selected className="text-dark">
                       Character limit
@@ -1052,56 +875,41 @@ const Textgenerate = () => {
             </div>
           </div>
         </div>
-        {/*---------------------------------------------------------*/}
+ {/*---------------------------------------------------------*/}
 
-        <div className="chatFooter  mt-5">
-          <div className={`inputBox shadow ${taskSelected === "Text Completion" ? "bg-disabled" : "bg-body"}`}>
+        <div className="chatFooter  mt-5 ">
+          <div className="inputBox shadow bg-body">
             <input
               type="text"
               placeholder="Enter your subject here"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              disabled={taskSelected === "Text Completion"}
             />
-          </div>
-             <button className="send input-btn input-box-disabled" onClick={handleContent}>
+            <button className="send" onClick={handleContent}>
               <img src={sendBtn} alt="Send"></img>
             </button>
+          </div>
 
-
-          <div className="reset">
-            <button
+             <div className="reset">
+              <button
               type="button"
-              className="btn-default btn-lg reset-btn"
+              className="btn btn-primary btn-lg reset-btn"
               onClick={() => {
                 window.location.reload();
               }}
-              disabled={taskSelected === "Text Completion"}
             >
               R E S E T
             </button>
-          </div>
-
-          <p
-            className="power-line"
-            style={{
-              color: "#333",
-              marginTop: "60px",
-              marginRight: "-130px",
-              opacity: "75%",
-            }}
-          >
-            *Powered by Claud(AWS).Vertex(Google).OpenAI(Microsoft)
-          </p>
+            </div>
+          {/* <p>
+            Beans may produce inaccurate information about people , place , or
+            facts.
+          </p> */}
         </div>
       </div>
 
-      {showInputBox && (
-        <div
-          className="main"
-          style={{ marginLeft: sidebarVisible ? "" : "40%" }}
-        >
-          {/* <FontAwesomeIcon
+      <div className="main" style={{ marginLeft: sidebarVisible ? "" : "40%" }}>
+        {/* <FontAwesomeIcon
           icon={faBars}
           size="2xl"
           // style={{ left: "310px", top: "10px", position: "absolute" }}
@@ -1114,144 +922,152 @@ const Textgenerate = () => {
           }}
           onClick={handleToggleSidebar}
         /> */}
-          <div className="lowerSide">
-            <div className="tab">
-              <div className="output-button d-flex">
-                <button
-                  type="button"
-                  class={`btn btn-outline-success text-dark option-btn ${
-                    selectedEngine === "claud" && source1 ? "active" : ""
-                  }`}
-                  onClick={() => handleLinkClick("claud")}
-                >
-                  Suggestion1
-                </button>
-                <button
-                  type="button"
-                  class={`btn btn-outline-success text-dark option-btn ${
-                    selectedEngine === "palm" ? "active" : ""
-                  }`}
-                  onClick={() => handleLinkClick("palm")}
-                >
-                  Suggestion2
-                </button>
-                <button
-                  type="button"
-                  class={`btn btn-outline-success text-dark option-btn ${
-                    selectedEngine === "generate" ? "active" : ""
-                  }`}
-                  onClick={() => handleLinkClick("generate")}
-                >
-                  Suggestion3
-                </button>
-                <button
-                  type="button"
-                  class={`btn btn-outline-success text-dark option-btn ${
-                    selectedEngine === "summary" ? "active" : ""
-                  }`}
-                  onClick={() => handleLinkClick("summary")}
-                >
-                  Suggestion4
-                </button>
-              </div>
+        <div className="lowerSide">
+           <div className="tab">
+            <div className="output-button d-flex">
+              <button
+                type="button"
+                class={`btn btn-outline-success text-dark option-btn ${
+                  selectedEngine === "claud" && source1
+                    ? "active"
+                    : ""
+                }`}
+                onClick={() => handleLinkClick("claud")}
+              >
+                Suggestion1
+              </button>
+              <button
+                type="button"
+                class={`btn btn-outline-success text-dark option-btn ${
+                  selectedEngine === "palm" ? "active" : ""
+                }`}
+                onClick={() => handleLinkClick("palm")}
+              >
+                Suggestion2
+              </button>
+              <button
+                type="button"
+                class={`btn btn-outline-success text-dark option-btn ${
+                  selectedEngine === "generate" ? "active" : ""
+                }`}
+                onClick={() => handleLinkClick("generate")}
+              >
+                Suggestion3
+              </button>
+              <button
+                type="button"
+                class={`btn btn-outline-success text-dark option-btn ${
+                  selectedEngine === "summary" ? "active" : ""
+                }`}
+                onClick={() => handleLinkClick("summary")}
+              >
+                Suggestion4
+              </button>
             </div>
           </div>
+          </div>
 
-          {!claudLoading && selectedEngine === "claud" && !source1 && (
-            <div className="banner">
-              <h3>Hello editor! Welcome to BCCL AI console.</h3>
-              <h3>Over to You...</h3>
-            </div>
-          )}
-          <div className="chats">
-            {claudLoading && selectedEngine === "claud" && (
-              <div className="container">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="loader">
-                      <div className="loader-inner box1"></div>
-                      <div className="loader-inner box2"></div>
-                      <div className="loader-inner box3"></div>
-                    </div>
+        <div className="chats">
+          {claudLoading && selectedEngine === "claud" && (
+             <div className="container">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="loader">
+                    <div className="loader-inner box1"></div>
+                    <div className="loader-inner box2"></div>
+                    <div className="loader-inner box3"></div>
                   </div>
                 </div>
               </div>
-            )}
-            {!claudLoading && selectedEngine === "claud" && source1 && (
+            </div>
+          )}
+          {!claudLoading &&
+            selectedEngine === "claud" &&
+            source1 && (
               <div className="chat bot">
-                {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
+                <img className="chatImg" src={gptImgLogo} alt="text" />
                 <p className="txts">{source1}</p>
               </div>
             )}
 
-            {gptLoading && selectedEngine === "generate" && (
-              <div className="container">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="loader">
-                      <div className="loader-inner box1"></div>
-                      <div className="loader-inner box2"></div>
-                      <div className="loader-inner box3"></div>
-                    </div>
+           {gptLoading && selectedEngine === "generate" && (
+             <div className="container">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="loader">
+                    <div className="loader-inner box1"></div>
+                    <div className="loader-inner box2"></div>
+                    <div className="loader-inner box3"></div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {!gptLoading && selectedEngine === "generate" && source3 && (
+
+          {!gptLoading &&
+            selectedEngine === "generate" &&
+            source3 && (
               <div className="chat bot">
-                {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
+                <img className="chatImg" src={gptImgLogo} alt="text" />
                 <p className="txt">{source3}</p>
               </div>
             )}
 
+
             {palmLoading && selectedEngine === "palm" && (
-              <div className="container">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="loader">
-                      <div className="loader-inner box1"></div>
-                      <div className="loader-inner box2"></div>
-                      <div className="loader-inner box3"></div>
-                    </div>
+             <div className="container">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="loader">
+                    <div className="loader-inner box1"></div>
+                    <div className="loader-inner box2"></div>
+                    <div className="loader-inner box3"></div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {!palmLoading && selectedEngine === "palm" && source2 && (
-              <div className="chat bot">
-                {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
-                <p className="txt">{source2}</p>
-              </div>
-            )}
 
-            {summaryLoading && selectedEngine === "summary" && (
-              <div className="container">
-                <div className="row">
-                  <div className="col-md-12">
-                    <div className="loader">
-                      <div className="loader-inner box1"></div>
-                      <div className="loader-inner box2"></div>
-                      <div className="loader-inner box3"></div>
-                    </div>
+          {!palmLoading && selectedEngine === "palm" && source2 && (
+            <div className="chat bot">
+              <img className="chatImg" src={gptImgLogo} alt="text" />
+              <p className="txt">{source2}</p>
+            </div>
+          )}
+
+
+
+
+             {summaryLoading && selectedEngine === "summary" && (
+             <div className="container">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="loader">
+                    <div className="loader-inner box1"></div>
+                    <div className="loader-inner box2"></div>
+                    <div className="loader-inner box3"></div>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {!summaryLoading && selectedEngine === "summary" && source4 && (
+{!summaryLoading &&
+            selectedEngine === "summary" &&
+            source4 && (
               <div className="chat bot">
-                <div>
+                 <div>
                   <div className="d-flex">
-                    {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
+                    <img className="chatImg" src={gptImgLogo} alt="text" />
                     <p className="txt">{source4}</p>
                   </div>
                   <div className="ai-img">
                     <p>
                       --------------------------------------------------------------------------
                     </p>
-                    <h3>AI-IMAGE</h3>
+                    <h3>AI-IMAGE OF THE GIVEN PROMPT</h3>
                     <img
                       src={imageURL}
                       alt="Generated "
@@ -1261,97 +1077,23 @@ const Textgenerate = () => {
                 </div>
               </div>
             )}
-          </div>
-          {source1 && source2 && source3 && source4 && (
-            <div className="btn-copy">
-              <button
-                type="button"
-                className="btn btn-lg"
-                onClick={handleDownloadTextFile}
-              >
-                Copy to Clipboard
-              </button>
-            </div>
-          )}
         </div>
-      )}
-      {!showInputBox && (
-        <div className="right-side">
-<div className=" text-dark"><h3>File Your Report Here</h3></div>
-          <div class="input-group">
-            <textarea
-              class="text-completion-box"
-              aria-label="With textarea"
-              placeholder="Please ingest your inputs here"
-              value={inputAutoText}
-              onChange={(e) => setInputAutoText(e.target.value)}
-            ></textarea>
-            <div className="optm-btn">
-              <button
-                type="button"
-                class="optimise-btn"
-                onClick={handleTextAutoCompletion}
-              >
-                Generate
-              </button>
-            </div>
-            <div className="clearfix"></div>
-          </div>
-
-          {autoLoading && (
-            <div className="container">
-              <div className="row">
-                <div className="col-md-12">
-                  <div class="text-center">
-                    <div
-                      class="spinner-border  text-dark"
-                      style={{ width: "3rem", height: "3rem" }}
-                      role="status"
-                    >
-                      <span class="visually-hidden">Loading...</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="d-flex justify-content-between">
-            {!autoLoading && (source5 && source6) && (
-               <>
-                <div className="box">
-                <h3 className="title-text">Generated Text</h3>
-                <div className="chat-bot-text">
-                  {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
-                  <p className="txt text-dark">{source5}</p>
-                </div>
-              </div>
-              <div className="box">
-                <h3 className="title-text">Title</h3>
-                <div className="chat-bot mb-3">
-                  {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
-                  <p className="txt">{source6}</p>
-                </div>
-              </div>
-             </>
-            )}
-          </div>
-
-          {/* {source5 && source6 && (
-            <div className="btn-copy btn-copy-text">
-              <button
-                type="button"
-                className="btn btn-lg"
-                onClick={handleDownloadTextFile}
-              >
-                Copy to Clipboard
-              </button>
-            </div>
-          )} */}
-        </div>
-      )}
+            <button
+              type="button"
+              className="btn btn-primary btn-lg"
+              style={{ width: "200px",
+                       marginTop:"-25px",
+                        marginLeft:"65px"
+                     }}
+             onClick={handleDownloadTextFile}
+            >
+              Copy to Clipboard
+            </button>
+      </div>
     </div>
+</>
   );
 };
 
 export default Textgenerate;
+

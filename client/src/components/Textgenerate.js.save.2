@@ -281,14 +281,13 @@ const Textgenerate = () => {
     setLoading(true);
 
     await Promise.all([handleAutoCompletion(), handleTitleGeneration()])
-      .then(() => {console.log("Sucessfully fetched response")
-       setLoading(false);})
+  
       .catch((error) => {
         // Handle error if needed
         console.error("Error:", error);
       })
       .finally(() => {
-        
+        setLoading(false);
       });
   };
 
@@ -1054,8 +1053,8 @@ const Textgenerate = () => {
         </div>
         {/*---------------------------------------------------------*/}
 
-        <div className="chatFooter  mt-5">
-          <div className={`inputBox shadow ${taskSelected === "Text Completion" ? "bg-disabled" : "bg-body"}`}>
+        <div className="chatFooter  mt-5 ">
+          <div className="inputBox shadow bg-body">
             <input
               type="text"
               placeholder="Enter your subject here"
@@ -1064,7 +1063,7 @@ const Textgenerate = () => {
               disabled={taskSelected === "Text Completion"}
             />
           </div>
-             <button className="send input-btn input-box-disabled" onClick={handleContent}>
+             <button className="send input-btn" onClick={handleContent}>
               <img src={sendBtn} alt="Send"></img>
             </button>
 
@@ -1282,7 +1281,7 @@ const Textgenerate = () => {
             <textarea
               class="text-completion-box"
               aria-label="With textarea"
-              placeholder="Please ingest your inputs here"
+              placeholder="Please injust your inputs here"
               value={inputAutoText}
               onChange={(e) => setInputAutoText(e.target.value)}
             ></textarea>
@@ -1317,15 +1316,16 @@ const Textgenerate = () => {
           )}
 
           <div className="d-flex justify-content-between">
-            {!autoLoading && (source5 && source6) && (
+            {!autoLoading && source5 && source6 && (
                <>
                 <div className="box">
                 <h3 className="title-text">Generated Text</h3>
                 <div className="chat-bot-text">
                   {/* <img className="chatImg" src={gptImgLogo} alt="text" /> */}
-                  <p className="txt text-dark">{source5}</p>
+                  <p className="txt">{source5}</p>
                 </div>
               </div>
+              <div className="vertical-line"></div>
               <div className="box">
                 <h3 className="title-text">Title</h3>
                 <div className="chat-bot mb-3">

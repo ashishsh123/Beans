@@ -96,7 +96,7 @@ app.post("/invoke-model", async (req, res) => {
 
     const request = {
       prompt: `\n\nHuman:${prompt}\n\nAssistant:`,
-      max_tokens_to_sample: 250,
+      max_tokens_to_sample: 5000,
       temperature: 0.1,
       top_p: 0.9,
     };
@@ -171,40 +171,38 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 /*CONTENT SUMMARIZATION */ ///////////////////////////////////////////////////////////////////////////////
-// app.post("/summary", async (req, res) => {
-//   try {
-//     const { text } = req.body;
+app.post("/summary", async (req, res) => {
+  try {
+    const { prompt } = req.body;
 
-//     if (!text) {
-//       return res.status(400).json({ error: "Please provide a story." });
-//     }
+    if (!prompt) {
+      return res.status(400).json({ error: "Please provide a story." });
+    }
 
-//     const prompt = `Please summarize the following story in  bullet points:\n\n${text}\n\nSummary for news article:`;
+    const completions = await openai.createChatCompletion({
+      model: "gpt-4-1106-preview",
+      messages: [
+        {
+          role: "system",
+          content: `${prompt}`,
+        },
+      ],
+      max_tokens: 1000,
+      temperature: 0.5,
+      top_p: 0.7,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+    const summary = completions.data.choices[0].message.content;
 
-//     const completions = await openai.createChatCompletion({
-//       model: "gpt-4-0613",
-//       messages: [
-//         {
-//           role: "system",
-//           content: `${prompt}`,
-//         },
-//       ],
-//       max_tokens: 1000,
-//       temperature: 0.5,
-//       top_p: 0.7,
-//       frequency_penalty: 0,
-//       presence_penalty: 0,
-//     });
-//     const summary = completions.data.choices[0].message.content;
-
-//     res.json({ summary });
-//   } catch (error) {
-//     console.error("Error during summary generation:", error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred during summary generation." });
-//   }
-// });
+    res.json({ summary });
+  } catch (error) {
+    console.error("Error during summary generation:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred during summary generation." });
+  }
+});
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*CONTENT GENERATION */
 app.post("/generation", async (req, res) => {
@@ -230,7 +228,39 @@ app.post("/generation", async (req, res) => {
     ];
 
     const completions = await openai.createChatCompletion({
-      model: "gpt-4-0613",
+      model: "gpt-4-1106-preview",
+      messages: conversation, // Use the conversation as messages
+      max_tokens: 4000,
+      temperature: 0.5,
+      top_p: 0.7,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
+
+    const summary = completions.data.choices[0].message.content;
+
+    res.json({ summary });
+  } catch (error) {
+    console.error("Error during Content generation:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred during Content generation." });
+  }
+});
+///////////////////////////////////////////////////////////////////////////////////////////////////
+app.post("/autogenerate", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    const conversation = [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
+
+    const completions = await openai.createChatCompletion({
+      model: "gpt-4-1106-preview",
       messages: conversation, // Use the conversation as messages
       max_tokens: 4000,
       temperature: 0.5,
@@ -251,46 +281,60 @@ app.post("/generation", async (req, res) => {
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*CONTENT PROOFREADING */
-// app.post("/improve-text", async (req, res) => {
-//   try {
-//     const { text } = req.body;
 
-//     if (!text) {
-//       return res.status(400).json({ error: "Please provide text to improve." });
-//     }
+app.post("/titlegenerate", async (req, res) => {
+  try {
+    const { prompt } = req.body;
 
-//     const conversation = [
-//       {
-//         role: "system",
-//         content:
-//           "You are a helpful assistant that improves text. Please perform the following tasks: Spelling, Grammar, Punctuation, Capitalization, Consistency errors in style and formatting, Missing words or phrases, Repeated words, Incorrect facts, Logic inconsistencies.",
-//       },
-//       {
-//         role: "user",
-//         content: text,
-//       },
-//     ];
+    const conversation = [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ];
 
-//     const completions = await openai.createChatCompletion({
-//       model: "gpt-4-0613",
-//       messages: conversation,
-//       max_tokens: 1000, // You can adjust this based on the length of the text
-//       temperature: 0.5,
-//       top_p: 0.7,
-//     });
+    const completions = await openai.createChatCompletion({
+      model: "gpt-4-1106-preview",
+      messages: conversation, // Use the conversation as messages
+      max_tokens: 4000,
+      temperature: 0.5,
+      top_p: 0.7,
+      frequency_penalty: 0,
+      presence_penalty: 0,
+    });
 
-//     const summary = completions.data.choices[0].message.content;
+    const summary = completions.data.choices[0].message.content;
 
-//     res.json({ summary });
-//   } catch (error) {
-//     console.error("Error during text improvement:", error);
-//     res
-//       .status(500)
-//       .json({ error: "An error occurred during text improvement." });
-//   }
-// });
-// Server
+    res.json({ summary });
+  } catch (error) {
+    console.error("Error during Content generation:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred during Content generation." });
+  }
+});
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+app.post("/image-generate", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    const response = await openai.createImage({
+      model: "dall-e-3",
+      prompt: prompt,
+      n: 1,
+      size: "1024x1024",
+    });
+    image_url = response.data.data[0].url;
+    console.log(image_url);
+    res.json({ image_url });
+  } catch (error) {
+    console.error("Error during Image generation:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred during Image generation." });
+  }
+});
+
 const port = 3001;
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
